@@ -71,7 +71,7 @@ def find_graphs() -> tuple[Response, int] | str:
     cipher_text = data['fileContent']
     cipher_text_processed: str = clean_text(cipher_text)
     count_letters = data['countLetters']
-    offset = 1 if count_letters == 2 else 2
+    offset = count_letters - 1
     graphs = [cipher_text_processed[i:i + count_letters] for i in range(0, len(cipher_text_processed) - offset)]
     graph_count = Counter(graphs)
     most_common_graphs = graph_count.most_common(data['countGraphs'])
@@ -79,5 +79,3 @@ def find_graphs() -> tuple[Response, int] | str:
     result_json = json.dumps(result, indent=4)
     print(result_json)
     return result_json
-
-

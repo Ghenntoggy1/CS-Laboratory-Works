@@ -28,8 +28,8 @@
 }
 
 .digraph-container {
-  margin-top: 10px;
-  width: 90%; /* Adjust width to fit plots within the viewport */
+  margin-top: 0px;
+  justify-content: center;
 }
 
 .input-row {
@@ -42,6 +42,40 @@
   margin-right: 15px; /* Space between input groups */
   display: flex; /* Align label and input in a row */
   align-items: center; /* Center vertically */
+}
+
+.input-row-text {
+  display: flex; /* Use flexbox for horizontal layout */
+  flex-wrap: wrap; /* Allow wrapping to the next line if needed */
+  margin-top: 10px; /* Space above the input fields */
+  margin-right: 15px; /* Space between input groups */
+  justify-content: center;
+  align-items: center;
+}
+
+.input-group-text {
+  margin: auto;
+  display: flex; /* Align label and input in a row */
+  align-items: center; /* Center vertically */
+}
+
+.input-row-text textarea {
+  margin-right: 10px; /* Space between the textarea and buttons */
+  margin-bottom: 10px; /* Space below the textarea */
+}
+
+button {
+  width: 100px; /* Fixed width */
+  height: 40px; /* Fixed height */
+  margin-left: 10px; /* Space between buttons */
+}
+
+.div-text {
+  margin-right: 15px; /* Space between input groups */
+  display: flex; /* Align label and input in a row */
+  align-items: center; /* Center vertically */
+  justify-content: center;
+  flex-direction: column;
 }
 
 .input_diagraphs {

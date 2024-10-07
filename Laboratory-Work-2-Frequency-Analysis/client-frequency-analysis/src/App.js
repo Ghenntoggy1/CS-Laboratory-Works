@@ -38,7 +38,7 @@ class App extends Component {
     const reader = new FileReader();
     reader.onload = (event) => {
       const fileContent = event.target.result;
-      this.setState({ fileContent: fileContent, originalFileContent: fileContent });
+      this.setState({ fileContent: fileContent.toUpperCase(), originalFileContent: fileContent });
 
       const payload = {
         fileContent: fileContent
@@ -194,17 +194,16 @@ class App extends Component {
   printText = () => {
     if (this.state.originalFileContent) {
       return (
-        <div className='input-group'>
+        <div className='div-text'>
+          <div className='input-group-text'>
           <label>Intercept:</label>
-          <div className='input-row'>
+          <div className='input-row-text'>
             <textarea
               value={this.state.originalFileContent}
               rows={8}
               cols={50}
               readOnly
             />
-            <button onClick={this.handleReset}>Reset</button>
-            <button onClick={this.modifyLetters}>Modify Letters!</button>
           </div>
           
           <label>Deciphered Text:</label>
@@ -214,13 +213,20 @@ class App extends Component {
             cols={50}
             readOnly
           />
+          </div>
+          <div className='input-row-text'>
+            <button onClick={this.handleReset}>Reset</button>
+            <button onClick={this.modifyLetters}>Modify Letters!</button>
+          </div>
         </div>
       );
     }
   };
+  
 
   handleReset = () => {
     this.setState({
+
       fileContent: "",
       userIntercept: {},
       processedLetters: [],
@@ -325,12 +331,13 @@ class App extends Component {
             <button onClick={this.onFileUpload}>Upload!</button>
           </div>
           {this.printText()}
+          {this.renderInterceptInputMapping()}
+
           <div className="digraph-container">
             {this.renderDigraphs()}
             {this.renderTrigraphs()}
           </div>
           {this.fileData()}
-          {this.renderInterceptInputMapping()}
         </header>
       </div>
     );
