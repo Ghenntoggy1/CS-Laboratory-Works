@@ -1,0 +1,62 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-header h1 {
+  margin-bottom: 20px;
+}
+
+.App-header input, .App-header button {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.plot-container {
+  margin-top: 20px;
+  width: 90%; /* Adjust width to fit plots within the viewport */
+}
+
+.digraph-container {
+  margin-top: 10px;
+  width: 90%; /* Adjust width to fit plots within the viewport */
+}
+
+.input-row {
+  display: flex; /* Use flexbox for horizontal layout */
+  flex-wrap: wrap; /* Allow wrapping to the next line if needed */
+  margin-top: 10px; /* Space above the input fields */
+}
+
+.input-group {
+  margin-right: 15px; /* Space between input groups */
+  display: flex; /* Align label and input in a row */
+  align-items: center; /* Center vertically */
+}
+
+.input_diagraphs {
+  margin-right: 15px; /* Space between input groups */
+  display: flex; /* Align label and input in a row */
+  align-items: center; /* Center vertically */
+  justify-content: center;
+}
+
+.input-box {
+  width: 20px; /* Smaller width for input boxes */
+  margin-left: 5px; /* Space between label and input */
+}
+
+.small-label {
+  font-size: 0.8rem; /* Adjust the size as needed */
+  margin-right: 5px; /* Space between label and input */
+}
