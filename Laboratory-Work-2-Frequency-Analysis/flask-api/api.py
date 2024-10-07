@@ -56,7 +56,6 @@ def modify_letters() -> tuple[Response, int] | str:
         if value == '':
             continue
         deciphered_text: str = deciphered_text.replace(key.upper(), value.lower())
-        deciphered_text: str = deciphered_text.replace(key.lower(), value.lower())
     return deciphered_text
 
 

@@ -226,12 +226,12 @@ class App extends Component {
 
   handleReset = () => {
     this.setState({
-
       fileContent: "",
       userIntercept: {},
       processedLetters: [],
       originalFileContent: "",
       digraphsInCipher: [],
+      trigraphsInCipher: [],
     });
   };
 
@@ -332,7 +332,6 @@ class App extends Component {
           </div>
           {this.printText()}
           {this.renderInterceptInputMapping()}
-
           <div className="digraph-container">
             {this.renderDigraphs()}
             {this.renderTrigraphs()}
