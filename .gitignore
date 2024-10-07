@@ -2,7 +2,6 @@
 .idea
 
 Laboratory-Work-2-Frequency-Analysis/client-frequency-analysis/node_modules
-Laboratory-Work-2-Frequency-Analysis/flask-api/.flaskenv
 Laboratory-Work-2-Frequency-Analysis/results
 Laboratory-Work-2-Frequency-Analysis/character_counts.json
 Laboratory-Work-2-Frequency-Analysis/flask-api/__pycache__
