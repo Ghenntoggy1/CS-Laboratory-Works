@@ -12,6 +12,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def clean_text(cipher_text: str) -> str:
     cipher_text: str = re.sub(r'\n', '', cipher_text)
     cipher_text_processed: str = re.sub(r'[^a-zA-Z]', '', cipher_text.upper())
+    print("Clean Text: ", cipher_text_processed)
     return cipher_text_processed
 
 
@@ -30,7 +31,7 @@ def print_cipher_text() -> tuple[Response, int] | str:
     if 'fileContent' not in data:
         return jsonify({"error": "No file content provided"}), 400
 
-    cipher_text = data['fileContent']
+    cipher_text = re.sub(r'[\r\n]+', ' ', data['fileContent'])
     number_of_characters = read_cipher_text(cipher_text)
     # data_plot = Data_Plot(number_of_characters)
     # data_plot.plot_data()
@@ -48,10 +49,10 @@ def modify_letters() -> tuple[Response, int] | str:
     if 'fileContent' not in data:
         return jsonify({"error": "No file content provided"}), 400
 
-    cipher_text = data['fileContent']
+    cipher_text = re.sub(r'[\r\n]+', ' ', data['fileContent'])
+    print(cipher_text)
     user_selection = data['userIntercept']
     deciphered_text = cipher_text.upper()
-    print(user_selection)
     for key, value in user_selection.items():
         if value == '':
             continue
