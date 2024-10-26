@@ -1,8 +1,8 @@
 .venv
 .idea
 
-Laboratory-Work-2-Frequency-Analysis/client-frequency-analysis/node_modules
-Laboratory-Work-2-Frequency-Analysis/results
-Laboratory-Work-2-Frequency-Analysis/character_counts.json
-Laboratory-Work-2-Frequency-Analysis/flask-api/__pycache__
-Laboratory-Work-2-Frequency-Analysis/flask-api/Data_Plot.py
+Laboratory_Work_2_Frequency_Analysis/client-frequency-analysis/node_modules
+Laboratory_Work_2_Frequency_Analysis/results
+Laboratory_Work_2_Frequency_Analysis/character_counts.json
+Laboratory_Work_2_Frequency_Analysis/flask-api/__pycache__
+Laboratory_Work_2_Frequency_Analysis/flask-api/Data_Plot.py
