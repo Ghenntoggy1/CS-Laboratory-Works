@@ -1,6 +1,6 @@
 import re
 
-from constants import REGEX_PATTERN_VALIDATION, REGEX_PATTERN_SUBSTITUTION, ALPHABET
+from constants import REGEX_PATTERN_VALIDATION, REGEX_PATTERN_SUBSTITUTION, ALPHABET, LENGTH_KEY
 
 
 def validate_cipher_text(cipher_text: str) -> bool:
@@ -14,7 +14,7 @@ def clean_cipher_text(cipher_text: str) -> str:
 
 
 def validate_key(key: str) -> bool:
-    return True if len(key) >= 5 else False
+    return True if len(key) >= LENGTH_KEY else False
 
 
 def encrypt_plain_text(plain_text: str, key: str) -> str:
