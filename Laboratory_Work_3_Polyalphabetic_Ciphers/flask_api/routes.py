@@ -1,7 +1,7 @@
 from flask import request, jsonify, Response, Blueprint, render_template
 
 from constants import PERMITTED_CHARACTERS
-from cipher_methods import validate_cipher_text, validate_key, encrypt_plain_text, decrypt_cipher_text
+from cipher_methods import validate_input_text, validate_key, encrypt_plain_text, decrypt_cipher_text
 
 router = Blueprint("router", __name__)
 
@@ -26,7 +26,7 @@ def cipher() -> Response:
         response.status_code = 400
         return response
 
-    if not validate_cipher_text(raw_plain_text):
+    if not validate_input_text(raw_plain_text):
         response: Response = jsonify({"message": "Invalid characters",
                                       "details": f"Permitted characters: {PERMITTED_CHARACTERS}",
                                       "status_code": 400})
@@ -70,7 +70,7 @@ def decipher() -> Response:
         response.status_code = 400
         return response
 
-    if not validate_cipher_text(raw_cipher_text):
+    if not validate_input_text(raw_cipher_text):
         response: Response = jsonify({"message": "Invalid characters",
                                       "details": f"Permitted characters: {PERMITTED_CHARACTERS}",
                                       "status_code": 400})

@@ -3,14 +3,14 @@ import re
 from constants import REGEX_PATTERN_VALIDATION, REGEX_PATTERN_SUBSTITUTION, ALPHABET, LENGTH_KEY
 
 
-def validate_cipher_text(cipher_text: str) -> bool:
-    if re.match(REGEX_PATTERN_VALIDATION, cipher_text):
+def validate_input_text(input_text: str) -> bool:
+    if re.match(REGEX_PATTERN_VALIDATION, input_text):
         return True
     return False
 
 
-def clean_cipher_text(cipher_text: str) -> str:
-    return re.sub(REGEX_PATTERN_SUBSTITUTION, '', cipher_text).upper()
+def clean_input_text(input_text: str) -> str:
+    return re.sub(REGEX_PATTERN_SUBSTITUTION, '', input_text).upper()
 
 
 def validate_key(key: str) -> bool:
@@ -18,7 +18,7 @@ def validate_key(key: str) -> bool:
 
 
 def encrypt_plain_text(plain_text: str, key: str) -> str:
-    cleansed_plain_text: str = clean_cipher_text(plain_text)
+    cleansed_plain_text: str = clean_input_text(plain_text)
     length_plain_text: int = len(cleansed_plain_text)
     length_key: int = len(key)
     encrypted_text: str = ""
@@ -44,7 +44,7 @@ def encrypt_plain_text(plain_text: str, key: str) -> str:
 
 
 def decrypt_cipher_text(cipher_text: str, key: str) -> str:
-    cleansed_cipher_test: str = clean_cipher_text(cipher_text)
+    cleansed_cipher_test: str = clean_input_text(cipher_text)
     length_cipher_text: int = len(cleansed_cipher_test)
     length_key: int = len(key)
     decrypted_text: str = ""
