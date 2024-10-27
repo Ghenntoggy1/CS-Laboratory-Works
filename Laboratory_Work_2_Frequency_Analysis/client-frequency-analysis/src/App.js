@@ -314,7 +314,7 @@ class App extends Component {
         <div className="input_diagraphs">
           <label className="small-label">Common Trigraphs in English Language:</label>
           {this.state.trigraphsCommon.map((trigraph) => (
-            <label className="small-label">{trigraph}</label>
+            <label classname="small-label">{trigraph}</label>
           ))}
         </div>
       </div>

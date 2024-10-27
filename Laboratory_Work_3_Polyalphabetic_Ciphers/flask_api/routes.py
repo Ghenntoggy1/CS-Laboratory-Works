@@ -1,10 +1,14 @@
-from flask import request, jsonify, Response, Blueprint
+from flask import request, jsonify, Response, Blueprint, render_template
 
 from constants import PERMITTED_CHARACTERS
 from cipher_methods import validate_cipher_text, validate_key, encrypt_plain_text, decrypt_cipher_text
 
 router = Blueprint("router", __name__)
 
+
+@router.route("/")
+def index():
+    return render_template("client.html")
 
 @router.post("/api/encrypt")
 def cipher() -> Response:
@@ -24,7 +28,7 @@ def cipher() -> Response:
 
     if not validate_cipher_text(raw_plain_text):
         response: Response = jsonify({"message": "Invalid characters",
-                                      "permitted_characters": PERMITTED_CHARACTERS,
+                                      "details": f"Permitted characters: {PERMITTED_CHARACTERS}",
                                       "status_code": 400})
         response.status_code = 400
         return response
@@ -38,7 +42,7 @@ def cipher() -> Response:
 
     if not validate_key(key):
         response: Response = jsonify({"message": "Invalid key length",
-                                      "permitted_length": ">= 7",
+                                      "details": "Key length >= 7",
                                       "status_code": 400})
         response.status_code = 400
         return response
@@ -68,7 +72,7 @@ def decipher() -> Response:
 
     if not validate_cipher_text(raw_cipher_text):
         response: Response = jsonify({"message": "Invalid characters",
-                                      "permitted_characters": PERMITTED_CHARACTERS,
+                                      "details": f"Permitted characters: {PERMITTED_CHARACTERS}",
                                       "status_code": 400})
         response.status_code = 400
         return response
@@ -81,13 +85,14 @@ def decipher() -> Response:
         return response
     if not validate_key(key):
         response: Response = jsonify({"message": "Invalid key length",
-                                      "permitted_length": ">= 7",
+                                      "details": f"Key length >= 7",
                                       "status_code": 400})
         response.status_code = 400
         return response
 
     decrypted_text: str = decrypt_cipher_text(raw_cipher_text, key)
-    response: Response = jsonify(
-        {"message": "Successfully decrypted", "decrypted_text": decrypted_text, "status_code": 200})
+    response: Response = jsonify({"message": "Successfully decrypted",
+                                  "decrypted_text": decrypted_text,
+                                  "status_code": 200})
     response.status_code = 200
     return response

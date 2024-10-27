@@ -1,0 +1,41 @@
+<!-- client_viginere_cipher/home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vigenere Cipher Encrypter/Decrypter</title>
+</head>
+<body>
+    <h1>Vigenere Cipher Encrypter/Decrypter</h1>
+    <form action="/vigenere_cipher" method="post">
+        <label for="key">Key:</label>
+        <input type="text" id="key" name="key" required>
+        <br>
+        <label for="text">Text:</label>
+        <textarea id="text" name="text" required></textarea>
+        <br>
+        <label for="mode">Mode:</label>
+        <select id="mode" name="mode">
+            <option value="encrypt">Encrypt</option>
+            <option value="decrypt">Decrypt</option>
+        </select>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if config['DEBUG'] %}
+        <pre>
+            <code>
+                {{ config }}
+            </code>
+        </pre>
+
+        <style>
+            pre {
+                white-space: pre-wrap;
+            }
+        </style>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,60 @@
+/* static/css/style.css */
+
+body {
+    font-family: 'Courier New', 'Courier New', 'sans-serif';
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.app_input {
+    display: grid;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+label {
+    display: flex;
+    justify-content: center;
+    min-width: 100px;
+    line-height: 26px;
+}
+
+input {
+    height: 20px;
+    flex: 0 0 200px;
+    margin-left: 10px;
+}
+
+.app_title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #f44336;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    white-space: normal;
+}
+.error-title {
+    font-weight: bold;
+}

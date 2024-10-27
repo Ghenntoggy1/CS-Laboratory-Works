@@ -5,7 +5,7 @@ from routes import router
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder="../client_vigenere_cipher/", static_folder="../client_vigenere_cipher/static")
     app.config["SWAGGER"] = {
         "title": "Vigenere Cipher Encryption/Decryption API",
         "description": "API for encrypting and decrypting text using the Vigenere cipher",
@@ -25,4 +25,4 @@ if __name__ == '__main__':
     # except Exception:
     #     port = 8081
 
-    create_app().run()
+    create_app().run(port=8000)
