@@ -1,4 +1,4 @@
-from Laboratory_Work_4_DES.fastAPI.constants import PC_1, IP, PC_2
+from Laboratory_Work_4_DES.fastAPI.constants import PC_1, IP, PC_2, E_BIT_SELECTION
 from Laboratory_Work_4_DES.fastAPI.main import initial_permutation_key, split_key, compile_keys, permute_key, \
     permute_message, split_message
 
@@ -31,9 +31,13 @@ permuted_keys: list[str] = [permute_key(key) for key in keys]
 print(f"Permuted Keys :\n{"\n".join(f"Key {key_nr} : {key}" for key_nr, key in enumerate(keys, start=1))}")
 print(f"PC-2 :\n{PC_2}")
 
-permuted_message: str = permute_message(binary_string)
+permuted_message: str = permute_message(binary_string, IP)
 print(f"Initial Permutation of Message : {permuted_message}")
 print(f"IP :\n{IP}")
 
 L_0, R_0 = split_message(permuted_message)
 print(f"Split Permuted Message into L_0 and R_0 : {L_0}, {R_0}")
+permuted_R = permute_message(R_0, E_BIT_SELECTION)
+
+print(f"Permuted R_0 : {permuted_R}")
+print(f"E-Bit Selection :\n{E_BIT_SELECTION}")

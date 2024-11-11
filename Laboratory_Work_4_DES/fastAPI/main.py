@@ -1,9 +1,10 @@
 import numpy
+import numpy as np
 from fastapi import FastAPI, status
 from pydantic import BaseModel
 from numpy import mod
 
-from constants import PC_1, PC_2, IP
+from constants import PC_1, PC_2, IP, E_BIT_SELECTION
 
 app = FastAPI()
 
@@ -49,11 +50,16 @@ def encrypt(request_body: RequestBody):
     permuted_keys: list[str] = [permute_key(key) for key in keys]
     print(f"Permuted Keys : {"\n".join(f"Key {key_nr} : {key}" for key_nr, key in enumerate(keys, start=1))}")
 
-    permuted_message: str = permute_message(binary_string)
+    permuted_message: str = permute_message(binary_string, IP)
     print(f"Initial Permutation of Message : {permuted_message}")
 
     L_0, R_0 = split_message(permuted_message)
     print(f"Split Message into L_0 and R_0 : {L_0}, {R_0}")
+
+    expanded_R = permute_message(R_0, E_BIT_SELECTION)
+    print(f"Permuted R_0 : {expanded_R}")
+
+
 
 
 def compile_keys(C_0: str, D_0: str, round: int = 16) -> list[str]:
@@ -82,5 +88,5 @@ def permute_key(key: str) -> str:
 def split_key(key: str) -> tuple[str, str]:
     return key[:len(key) // 2], key[len(key) // 2:]
 
-def permute_message(message: str) -> str:
-    return "".join([message[index - 1] for index in IP.flatten()])
+def permute_message(message: str, table: np.array) -> str:
+    return "".join([message[index - 1] for index in table.flatten()])
