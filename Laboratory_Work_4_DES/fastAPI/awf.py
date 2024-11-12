@@ -1,6 +1,6 @@
-from Laboratory_Work_4_DES.fastAPI.constants import PC_1, IP, PC_2, E_BIT_SELECTION, IP_INVERSE
+from Laboratory_Work_4_DES.fastAPI.constants import PC_1, IP, PC_2, E_BIT_SELECTION, IP_INVERSE, P_BOX
 from Laboratory_Work_4_DES.fastAPI.main import initial_permutation_key, split_key, compile_keys, permute_key, \
-    permute_message, split_message, function_f, compile_message_portions
+    permute_message, split_message, function_f, compile_message_portions, S_BOX_R
 
 print("STEP 0: PREREQUISITES")
 plain_text: str = "0123456789ABCDEF"
@@ -71,3 +71,23 @@ print(f"IP-1 :\n{IP_INVERSE}")
 print("STEP 13: CONVERT BINARY TO HEXADECIMAL")
 hexadecimal_string = hex(int(final_permutation, 2))[2:].upper()
 print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
+
+
+
+
+
+# TODO MY TASK:
+round_i = 16
+L_i_1 = messages_list[(round_i - 1) - 1][0]
+S_BOXED_R_i_1 = S_BOX_R(messages_list[(round_i - 1) - 1][1], permuted_keys[round_i - 1])
+
+print("L_i-1: ", L_i_1)
+print("f_i: ", S_BOXED_R_i_1)
+print("TRUE R_i: ", R_16)
+
+function_f_i = permute_message(S_BOXED_R_i_1, P_BOX)
+print("Permuted f_i: ", function_f_i)
+
+R_i = bin(int(L_i_1, 2) ^ int(function_f_i, 2))[2:].zfill(len(L_i_1))
+print("R_i: ", R_i)
+

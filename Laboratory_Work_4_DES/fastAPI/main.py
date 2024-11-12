@@ -5,7 +5,7 @@ from numpy.ma.core import right_shift
 from pydantic import BaseModel
 from numpy import mod
 
-from Laboratory_Work_4_DES.fastAPI.constants import list_of_S_BOXES, P_BOX, IP_INVERSE
+from Laboratory_Work_4_DES.fastAPI.constants import list_of_S_BOXES, P_BOX, IP_INVERSE, S1_BOX
 from constants import PC_1, PC_2, IP, E_BIT_SELECTION
 
 app = FastAPI()
@@ -91,7 +91,7 @@ def compile_message_portions(L_0: str, R_0: str, permuted_keys: list[str], round
 
     return message_portions[1:]
 
-def function_f(R_0: str, K_1: str) -> str:
+def S_BOX_R(R_0: str, K_1: str) -> str:
     S_BOXED_R: str = ""
 
     expanded_R_0 = permute_message(R_0, E_BIT_SELECTION)
@@ -101,7 +101,7 @@ def function_f(R_0: str, K_1: str) -> str:
     expanded_XORed_R_0 = bin(int(expanded_R_0, 2) ^ int(K_1, 2))[2:].zfill(len(expanded_R_0))
     print(f"R_0 XOR K_1 = {expanded_XORed_R_0}")
     for block_nr, block_length in enumerate(range(0, len(expanded_XORed_R_0), 6), start=0):
-        block = expanded_XORed_R_0[block_length:block_length+6]
+        block = expanded_XORed_R_0[block_length:block_length + 6]
         print(f"Block {block_nr + 1} : {block}")
         row = int(block[0] + block[-1], 2)
         column = int(block[1:-1], 2)
@@ -110,6 +110,10 @@ def function_f(R_0: str, K_1: str) -> str:
         print(f"S{block_nr + 1}-Box Value : {list_of_S_BOXES[block_nr][row][column]}")
         S_BOXED_R += bin(list_of_S_BOXES[block_nr][row][column])[2:].zfill(4)
     print(f"S-Boxed R : {S_BOXED_R}")
+    return S_BOXED_R
+
+def function_f(R_0: str, K_1: str) -> str:
+    S_BOXED_R: str = S_BOX_R(R_0, K_1)
     permuted_S_BOXED_R = permute_message(S_BOXED_R, P_BOX)
     print(f"Result R : {permuted_S_BOXED_R}")
     print(f"P-Box :\n{P_BOX}")
