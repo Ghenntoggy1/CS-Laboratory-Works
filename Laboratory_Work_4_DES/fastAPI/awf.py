@@ -3,7 +3,8 @@ from Laboratory_Work_4_DES.fastAPI.main import initial_permutation_key, split_ke
     permute_message, split_message, function_f, compile_message_portions, S_BOX_R
 
 print("STEP 0: PREREQUISITES")
-plain_text: str = "0123456789ABCDEF"
+# 85E813540F0AB405
+plain_text: str = "85E813540F0AB405"
 print(f"Received Message: {plain_text}")
 key: str = "133457799BBCDFF1"
 print(f"Received Key: {key}")
@@ -28,7 +29,7 @@ C_0, D_0 = split_key(permuted_key)
 print(f"Split Key into C_0 and D_0 : {C_0}, {D_0}")
 
 print("STEP 5: COMPILE ROUND KEYS")
-permuted_keys: list[str] = compile_keys(C_0, D_0, 16)
+permuted_keys: list[str] = compile_keys(C_0, D_0, 16, False)
 # print(f"Compile Keys :\n{"\n".join(f"Key {key_nr} : {key}" for key_nr, key in enumerate(permuted_keys, start=1))}")
 
 # print("STEP 6: PERMUTE KEYS")
@@ -69,7 +70,7 @@ print(f"Final Permutation : {final_permutation}")
 print(f"IP-1 :\n{IP_INVERSE}")
 
 print("STEP 13: CONVERT BINARY TO HEXADECIMAL")
-hexadecimal_string = hex(int(final_permutation, 2))[2:].upper()
+hexadecimal_string = hex(int(final_permutation, 2))[2:].zfill(len(final_permutation) // 4).upper()
 print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
 
 
@@ -77,17 +78,17 @@ print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
 
 
 # TODO MY TASK:
-round_i = 16
-L_i_1 = messages_list[(round_i - 1) - 1][0]
-S_BOXED_R_i_1 = S_BOX_R(messages_list[(round_i - 1) - 1][1], permuted_keys[round_i - 1])
-
-print("L_i-1: ", L_i_1)
-print("f_i: ", S_BOXED_R_i_1)
-print("TRUE R_i: ", R_16)
-
-function_f_i = permute_message(S_BOXED_R_i_1, P_BOX)
-print("Permuted f_i: ", function_f_i)
-
-R_i = bin(int(L_i_1, 2) ^ int(function_f_i, 2))[2:].zfill(len(L_i_1))
-print("R_i: ", R_i)
+# round_i = 16
+# L_i_1 = messages_list[(round_i - 1) - 1][0]
+# S_BOXED_R_i_1 = S_BOX_R(messages_list[(round_i - 1) - 1][1], permuted_keys[round_i - 1])
+#
+# print("L_i-1: ", L_i_1)
+# print("f_i: ", S_BOXED_R_i_1)
+# print("TRUE R_i: ", R_16)
+#
+# function_f_i = permute_message(S_BOXED_R_i_1, P_BOX)
+# print("Permuted f_i: ", function_f_i)
+#
+# R_i = bin(int(L_i_1, 2) ^ int(function_f_i, 2))[2:].zfill(len(L_i_1))
+# print("R_i: ", R_i)
 

@@ -132,15 +132,19 @@ def compile_keys(C_0: str, D_0: str, round: int = 16, is_left_shift: bool = True
             C_0, D_0 = C_i, D_i
             keys.append(C_i + D_i)
     else:
-
         for i in range(0, round):
+            if i == 0:
+                keys.append(C_0 + D_0)
+                continue
+            # TODO: Check if right shift is correct
             right_shift = 1 if i + 1 in [2, 9, 16] else 2
-            C_i = C_0[right_shift:] + C_0[:right_shift]
-            D_i = D_0[right_shift:] + D_0[:right_shift]
+            C_i = C_0[-right_shift:] + C_0[:-right_shift]
+            # C_i = C_0[:right_shift] + C_0[right_shift:]
+            D_i = D_0[-right_shift:] + D_0[:-right_shift]
+            # D_i = D_0[:right_shift] + D_0[right_shift:]
             C_0, D_0 = C_i, D_i
             keys.append(C_i + D_i)
     permuted_keys: list[str] = [permute_key(key) for key in keys[1:]]
-    print(f"{len(permuted_keys)}")
     print(f"Round Keys :\n{"\n".join(f"Key {key_nr} : {key}" for key_nr, key in enumerate(permuted_keys, start=1))}")
     return permuted_keys
 
