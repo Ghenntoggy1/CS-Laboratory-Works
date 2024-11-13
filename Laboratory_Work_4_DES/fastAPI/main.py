@@ -1,11 +1,9 @@
-import numpy
 import numpy as np
 from fastapi import FastAPI, status
-from numpy.ma.core import right_shift
 from pydantic import BaseModel
 from numpy import mod
 
-from Laboratory_Work_4_DES.fastAPI.constants import list_of_S_BOXES, P_BOX, IP_INVERSE, S1_BOX
+from constants import list_of_S_BOXES, P_BOX, IP_INVERSE
 from constants import PC_1, PC_2, IP, E_BIT_SELECTION
 
 app = FastAPI()
@@ -14,11 +12,16 @@ class RequestBody(BaseModel):
     message: str
     key: str
 
+class TaskBody(BaseModel):
+    round_i: int
+    S_BOXED_R_i_1: str
+    L_i_1: str
+
 class Response(BaseModel):
     content: dict
     status_code: int
 
-@app.get("/api/encrypt",
+@app.post("/api/encrypt",
          response_model=Response,
          status_code=status.HTTP_200_OK
          )
@@ -36,10 +39,13 @@ def encrypt(request_body: RequestBody):
     binary_string = bin(int(plain_text, 16))[2:].zfill(len(plain_text) * 4)
     print(f"Convert Message from Hexadecimal to Binary : {binary_string}")
 
+    binary_key = bin(int(key, 16))[2:].zfill(len(key) * 4)
+    print(f"Convert Key from Hexadecimal to Binary : {binary_key}")
+
     L, R = split_message(binary_string)
     print(f"Split Message into L and R : {L}, {R}")
 
-    permuted_key: str = initial_permutation_key(key)
+    permuted_key: str = initial_permutation_key(binary_key)
     print(f"Initial Permutation of Key : {permuted_key}")
     print(f"PC_1 : {PC_1}")
 
@@ -78,6 +84,98 @@ def encrypt(request_body: RequestBody):
                  "status_code": status.HTTP_200_OK},
         status_code=status.HTTP_200_OK
     )
+
+@app.post("/api/decrypt",
+         response_model=Response,
+         status_code=status.HTTP_200_OK
+         )
+def decrypt(request_body: RequestBody):
+    if request_body.message == "" or request_body.key == "":
+        return Response(
+            content={"message": "Message or key is empty"},
+            status_code=status.HTTP_400_BAD_REQUEST
+            )
+    plain_text: str = request_body.message
+    print(f"Received Message: {plain_text}")
+    key: str = request_body.key
+    print(f"Received Key: {key}")
+
+    binary_string = bin(int(plain_text, 16))[2:].zfill(len(plain_text) * 4)
+    print(f"Convert Message from Hexadecimal to Binary : {binary_string}")
+
+    binary_key = bin(int(key, 16))[2:].zfill(len(key) * 4)
+    print(f"Convert Key from Hexadecimal to Binary : {binary_key}")
+
+    L, R = split_message(binary_string)
+    print(f"Split Message into L and R : {L}, {R}")
+
+    permuted_key: str = initial_permutation_key(binary_key)
+    print(f"Initial Permutation of Key : {permuted_key}")
+    print(f"PC_1 : {PC_1}")
+
+    C_0, D_0 = split_key(permuted_key)
+    print(f"Split Key into C_0 and D_0 : {C_0}, {D_0}")
+
+    permuted_keys: list[str] = compile_keys(C_0, D_0, round=16, is_left_shift=False)
+
+    permuted_message: str = permute_message(binary_string, IP)
+    print(f"Initial Permutation of Message : {permuted_message}")
+
+    L_0, R_0 = split_message(permuted_message)
+    print(f"Split Message into L_0 and R_0 : {L_0}, {R_0}")
+
+    expanded_R = permute_message(R_0, E_BIT_SELECTION)
+    print(f"Permuted R_0 : {expanded_R}")
+    print(f"E-Bit Selection :\n{E_BIT_SELECTION}")
+
+    messages_list = compile_message_portions(L_0, R_0, permuted_keys, 16)
+    print(f"Messages List : {"\n".join(f"Key {message_nr} : {message}" for message_nr, message in enumerate(messages_list, start=1))}")
+
+    L_16, R_16 = messages_list[-1]
+    reversed_message = R_16 + L_16
+    print(f"Reversed Message : {reversed_message}")
+
+    final_permutation = permute_message(reversed_message, IP_INVERSE)
+    print(f"Final Permutation : {final_permutation}")
+    print(f"IP-1 :\n{IP_INVERSE}")
+
+    hexadecimal_string = hex(int(final_permutation, 2))[2:].upper()
+    print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
+
+    return Response(
+        content={"message": "Encryption Successful",
+                 "encrypted_message": hexadecimal_string,
+                 "status_code": status.HTTP_200_OK},
+        status_code=status.HTTP_200_OK
+    )
+
+@app.post("/api/task",
+          response_model=Response,
+          status_code=status.HTTP_200_OK)
+def perform_task(task_body: TaskBody):
+    if task_body.round_i == "" or task_body.L_i_1 == "" or task_body.S_BOXED_R_i_1 == "":
+        return Response(
+            content={"message": "Round, L_i_1 or S_BOXED_R_i_1 is empty"},
+            status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+    round_i: int = task_body.round_i
+    S_BOXED_R_i_1: str = task_body.S_BOXED_R_i_1
+    L_i_1: str = task_body.L_i_1
+
+    function_f_i = permute_message(S_BOXED_R_i_1, P_BOX)
+    print(f"Permuted f_i: {function_f_i}")
+
+    R_i = bin(int(L_i_1, 2) ^ int(function_f_i, 2))[2:].zfill(len(L_i_1))
+    print("R_i: ", R_i)
+
+    return Response(
+        content={"message": "Task Successful",
+                 "R_i": R_i,
+                 "status_code": status.HTTP_200_OK},
+        status_code=status.HTTP_200_OK
+    )
+
 
 def compile_message_portions(L_0: str, R_0: str, permuted_keys: list[str], round: int = 16) -> list[tuple[str, str]]:
     message_portions: list[tuple[str, str]] = [(L_0, R_0)]
@@ -136,7 +234,6 @@ def compile_keys(C_0: str, D_0: str, round: int = 16, is_left_shift: bool = True
             if i == 0:
                 keys.append(C_0 + D_0)
                 continue
-            # TODO: Check if right shift is correct
             right_shift = 1 if i + 1 in [2, 9, 16] else 2
             C_i = C_0[-right_shift:] + C_0[:-right_shift]
             # C_i = C_0[:right_shift] + C_0[right_shift:]
