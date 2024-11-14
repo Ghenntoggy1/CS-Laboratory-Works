@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vigenere Cipher Encrypter/Decrypter</title>
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+  <div class="app_title">
+    <h1>DES Cipher Encrypter/Decrypter</h1>
+  </div>
+  <div class="app">
+    <div class="selector_task">
+      <label for="task">Task Selector:</label>
+      <select id="task" onchange="handleTaskChange()">
+        <option value="encrypt/decrypt">Encrypt/Decrypt</option>
+        <option value="task">Task 2.10</option>
+      </select>
+    </div>
+    <div class="app_input">
+      <label for="text">Message:</label>
+      <input type="text" id="text" placeholder="Enter your message">
+    </div>
+    <div class="app_input">
+      <label class="label_class" for="key">Key:</label>
+      <input type="text" id="key" placeholder="Enter your key">
+    </div>
+    <div class="app_input_hidden">
+      <label class="label_class" for="key_hidden">S_BOXED_R_(i-1):</label>
+      <input type="text" id="key_hidden" placeholder="Enter S_BOXED_R_(i-1)">
+    </div>
+    <div class="app_input">
+      <label for="result">Result:</label>
+      <input type="text" id="result" placeholder="Result" readonly>
+    </div>
+    <div class="app_buttons">
+      <button onclick="handle_encrypt_button_click()" id="encrypt">Encrypt</button>
+      <button onclick="handle_decrypt_button_click()" id="decrypt">Decrypt</button>
+    </div>
+  </div>
+  <div id="error-message" class="error-message">
+    <span class="error-title"> </span>
+    <span class="error-body"> </span>
+    <span class="error-details"> </span>
+  </div>
+
+  <script src="../static/js/api.js"></script>
+</body>
+</html>

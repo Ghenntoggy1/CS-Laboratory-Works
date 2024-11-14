@@ -2,11 +2,19 @@ import numpy as np
 from fastapi import FastAPI, status
 from pydantic import BaseModel
 from numpy import mod
-
+from starlette.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+from fastapi import Request
 from constants import list_of_S_BOXES, P_BOX, IP_INVERSE
 from constants import PC_1, PC_2, IP, E_BIT_SELECTION
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="client_DES/static"), name="static")
+
+# templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="client_DES/templates")
 
 class RequestBody(BaseModel):
     message: str
@@ -20,6 +28,12 @@ class TaskBody(BaseModel):
 class Response(BaseModel):
     content: dict
     status_code: int
+
+@app.get("/main_page", response_class=HTMLResponse)
+async def read_item(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="client.html"
+    )
 
 @app.post("/api/encrypt",
          response_model=Response,
@@ -36,51 +50,60 @@ def encrypt(request_body: RequestBody):
     key: str = request_body.key
     print(f"Received Key: {key}")
 
-    binary_string = bin(int(plain_text, 16))[2:].zfill(len(plain_text) * 4)
-    print(f"Convert Message from Hexadecimal to Binary : {binary_string}")
 
-    binary_key = bin(int(key, 16))[2:].zfill(len(key) * 4)
-    print(f"Convert Key from Hexadecimal to Binary : {binary_key}")
 
-    L, R = split_message(binary_string)
-    print(f"Split Message into L and R : {L}, {R}")
+    final_cipher_text: str = ""
+    start: int = 0
+    while start + len(key) <= len(plain_text):
+        portion: str = plain_text[start:start + len(key)]
 
-    permuted_key: str = initial_permutation_key(binary_key)
-    print(f"Initial Permutation of Key : {permuted_key}")
-    print(f"PC_1 : {PC_1}")
+        binary_string = bin(int(portion, 16))[2:].zfill(len(portion) * 4)
+        print(f"Convert Message from Hexadecimal to Binary : {binary_string}")
 
-    C_0, D_0 = split_key(permuted_key)
-    print(f"Split Key into C_0 and D_0 : {C_0}, {D_0}")
+        binary_key = bin(int(key, 16))[2:].zfill(len(key) * 4)
+        print(f"Convert Key from Hexadecimal to Binary : {binary_key}")
 
-    permuted_keys: list[str] = compile_keys(C_0, D_0, 16)
+        L, R = split_message(binary_string)
+        print(f"Split Message into L and R : {L}, {R}")
 
-    permuted_message: str = permute_message(binary_string, IP)
-    print(f"Initial Permutation of Message : {permuted_message}")
+        permuted_key: str = initial_permutation_key(binary_key)
+        print(f"Initial Permutation of Key : {permuted_key}")
+        print(f"PC_1 : {PC_1}")
 
-    L_0, R_0 = split_message(permuted_message)
-    print(f"Split Message into L_0 and R_0 : {L_0}, {R_0}")
+        C_0, D_0 = split_key(permuted_key)
+        print(f"Split Key into C_0 and D_0 : {C_0}, {D_0}")
 
-    expanded_R = permute_message(R_0, E_BIT_SELECTION)
-    print(f"Permuted R_0 : {expanded_R}")
-    print(f"E-Bit Selection :\n{E_BIT_SELECTION}")
+        permuted_keys: list[str] = compile_keys(C_0, D_0, 16)
 
-    messages_list = compile_message_portions(L_0, R_0, permuted_keys, 16)
-    print(f"Messages List : {"\n".join(f"Key {message_nr} : {message}" for message_nr, message in enumerate(messages_list, start=1))}")
+        permuted_message: str = permute_message(binary_string, IP)
+        print(f"Initial Permutation of Message : {permuted_message}")
 
-    L_16, R_16 = messages_list[-1]
-    reversed_message = R_16 + L_16
-    print(f"Reversed Message : {reversed_message}")
+        L_0, R_0 = split_message(permuted_message)
+        print(f"Split Message into L_0 and R_0 : {L_0}, {R_0}")
 
-    final_permutation = permute_message(reversed_message, IP_INVERSE)
-    print(f"Final Permutation : {final_permutation}")
-    print(f"IP-1 :\n{IP_INVERSE}")
+        expanded_R = permute_message(R_0, E_BIT_SELECTION)
+        print(f"Permuted R_0 : {expanded_R}")
+        print(f"E-Bit Selection :\n{E_BIT_SELECTION}")
 
-    hexadecimal_string = hex(int(final_permutation, 2))[2:].upper()
-    print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
+        messages_list = compile_message_portions(L_0, R_0, permuted_keys, 16)
+        print(f"Messages List : {"\n".join(f"Key {message_nr} : {message}" for message_nr, message in enumerate(messages_list, start=1))}")
+
+        L_16, R_16 = messages_list[-1]
+        reversed_message = R_16 + L_16
+        print(f"Reversed Message : {reversed_message}")
+
+        final_permutation = permute_message(reversed_message, IP_INVERSE)
+        print(f"Final Permutation : {final_permutation}")
+        print(f"IP-1 :\n{IP_INVERSE}")
+
+        hexadecimal_string = hex(int(final_permutation, 2))[2:].upper().zfill(len(final_permutation) // 4)
+        print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
+        final_cipher_text += hexadecimal_string
+        start += len(key)
 
     return Response(
         content={"message": "Encryption Successful",
-                 "encrypted_message": hexadecimal_string,
+                 "encrypted_message": final_cipher_text,
                  "status_code": status.HTTP_200_OK},
         status_code=status.HTTP_200_OK
     )
@@ -95,56 +118,63 @@ def decrypt(request_body: RequestBody):
             content={"message": "Message or key is empty"},
             status_code=status.HTTP_400_BAD_REQUEST
             )
-    plain_text: str = request_body.message
-    print(f"Received Message: {plain_text}")
+    cipher_text: str = request_body.message
+    print(f"Received Message: {cipher_text}")
     key: str = request_body.key
     print(f"Received Key: {key}")
 
-    binary_string = bin(int(plain_text, 16))[2:].zfill(len(plain_text) * 4)
-    print(f"Convert Message from Hexadecimal to Binary : {binary_string}")
+    final_plain_text: str = ""
+    start: int = 0
+    while start + len(key) <= len(cipher_text):
+        portion: str = cipher_text[start:start + len(key)]
 
-    binary_key = bin(int(key, 16))[2:].zfill(len(key) * 4)
-    print(f"Convert Key from Hexadecimal to Binary : {binary_key}")
+        binary_string = bin(int(portion, 16))[2:].zfill(len(portion) * 4)
+        print(f"Convert Message from Hexadecimal to Binary : {binary_string}")
 
-    L, R = split_message(binary_string)
-    print(f"Split Message into L and R : {L}, {R}")
+        binary_key = bin(int(key, 16))[2:].zfill(len(key) * 4)
+        print(f"Convert Key from Hexadecimal to Binary : {binary_key}")
 
-    permuted_key: str = initial_permutation_key(binary_key)
-    print(f"Initial Permutation of Key : {permuted_key}")
-    print(f"PC_1 : {PC_1}")
+        L, R = split_message(binary_string)
+        print(f"Split Message into L and R : {L}, {R}")
 
-    C_0, D_0 = split_key(permuted_key)
-    print(f"Split Key into C_0 and D_0 : {C_0}, {D_0}")
+        permuted_key: str = initial_permutation_key(binary_key)
+        print(f"Initial Permutation of Key : {permuted_key}")
+        print(f"PC_1 : {PC_1}")
 
-    permuted_keys: list[str] = compile_keys(C_0, D_0, round=16, is_left_shift=False)
+        C_0, D_0 = split_key(permuted_key)
+        print(f"Split Key into C_0 and D_0 : {C_0}, {D_0}")
 
-    permuted_message: str = permute_message(binary_string, IP)
-    print(f"Initial Permutation of Message : {permuted_message}")
+        permuted_keys: list[str] = compile_keys(C_0, D_0, round=16, is_left_shift=False)
 
-    L_0, R_0 = split_message(permuted_message)
-    print(f"Split Message into L_0 and R_0 : {L_0}, {R_0}")
+        permuted_message: str = permute_message(binary_string, IP)
+        print(f"Initial Permutation of Message : {permuted_message}")
 
-    expanded_R = permute_message(R_0, E_BIT_SELECTION)
-    print(f"Permuted R_0 : {expanded_R}")
-    print(f"E-Bit Selection :\n{E_BIT_SELECTION}")
+        L_0, R_0 = split_message(permuted_message)
+        print(f"Split Message into L_0 and R_0 : {L_0}, {R_0}")
 
-    messages_list = compile_message_portions(L_0, R_0, permuted_keys, 16)
-    print(f"Messages List : {"\n".join(f"Key {message_nr} : {message}" for message_nr, message in enumerate(messages_list, start=1))}")
+        expanded_R = permute_message(R_0, E_BIT_SELECTION)
+        print(f"Permuted R_0 : {expanded_R}")
+        print(f"E-Bit Selection :\n{E_BIT_SELECTION}")
 
-    L_16, R_16 = messages_list[-1]
-    reversed_message = R_16 + L_16
-    print(f"Reversed Message : {reversed_message}")
+        messages_list = compile_message_portions(L_0, R_0, permuted_keys, 16)
+        print(f"Messages List : {"\n".join(f"Key {message_nr} : {message}" for message_nr, message in enumerate(messages_list, start=1))}")
 
-    final_permutation = permute_message(reversed_message, IP_INVERSE)
-    print(f"Final Permutation : {final_permutation}")
-    print(f"IP-1 :\n{IP_INVERSE}")
+        L_16, R_16 = messages_list[-1]
+        reversed_message = R_16 + L_16
+        print(f"Reversed Message : {reversed_message}")
 
-    hexadecimal_string = hex(int(final_permutation, 2))[2:].upper()
-    print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
+        final_permutation = permute_message(reversed_message, IP_INVERSE)
+        print(f"Final Permutation : {final_permutation}")
+        print(f"IP-1 :\n{IP_INVERSE}")
+
+        hexadecimal_string = hex(int(final_permutation, 2))[2:].upper().zfill(len(final_permutation) // 4)
+        print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
+        final_plain_text += hexadecimal_string
+        start += len(key)
 
     return Response(
-        content={"message": "Encryption Successful",
-                 "encrypted_message": hexadecimal_string,
+        content={"message": "Decryption Successful",
+                 "decrypted_message": final_plain_text,
                  "status_code": status.HTTP_200_OK},
         status_code=status.HTTP_200_OK
     )
