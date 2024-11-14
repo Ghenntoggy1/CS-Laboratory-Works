@@ -50,7 +50,11 @@ def encrypt(request_body: RequestBody):
     key: str = request_body.key
     print(f"Received Key: {key}")
 
-
+    # plain_text += "0D0A"
+    # plain_text = plain_text.zfill(len(plain_text) % 16)
+    if len(plain_text) % 16 != 0:
+        plain_text += "0" * (16 - len(plain_text) % 16)
+    print(f"Message Padded : {plain_text}")
 
     final_cipher_text: str = ""
     start: int = 0
@@ -122,6 +126,10 @@ def decrypt(request_body: RequestBody):
     print(f"Received Message: {cipher_text}")
     key: str = request_body.key
     print(f"Received Key: {key}")
+
+    if len(cipher_text) % 16 != 0:
+        cipher_text += "0" * (16 - len(cipher_text) % 16)
+    print(f"Message Padded : {cipher_text}")
 
     final_plain_text: str = ""
     start: int = 0
