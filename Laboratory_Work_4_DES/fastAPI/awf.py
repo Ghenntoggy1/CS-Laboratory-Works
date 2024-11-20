@@ -61,6 +61,19 @@ while start + len(key) <= len(plain_text):
     print(f"Convert Message from Binary to Hexadecimal : {hexadecimal_string}")
     final_cipher_text += hexadecimal_string
     start += len(key)
+    # round_i = 16
+    # L_i_1 = messages_list[(round_i - 1) - 1][0]
+    # S_BOXED_R_i_1 = S_BOX_R(messages_list[(round_i - 1) - 1][1], permuted_keys[round_i - 1])
+    #
+    # print("L_i-1: ", L_i_1)
+    # print("f_i: ", S_BOXED_R_i_1)
+    # print("TRUE R_i: ", R_16)
+    #
+    # function_f_i = permute_message(S_BOXED_R_i_1, P_BOX)
+    # print("Permuted f_i: ", function_f_i)
+    #
+    # R_i = bin(int(L_i_1, 2) ^ int(function_f_i, 2))[2:].zfill(len(L_i_1))
+    # print("R_i: ", R_i)
 
 print(f"Final Cipher Text : {final_cipher_text}")
 
@@ -80,3 +93,11 @@ print(f"Final Cipher Text : {final_cipher_text}")
 # R_i = bin(int(L_i_1, 2) ^ int(function_f_i, 2))[2:].zfill(len(L_i_1))
 # print("R_i: ", R_i)
 
+
+# S-Boxed R : 10100111100000110010010000101001
+# L_i-1:  11000010100011001001011000001101
+# f_i:  10100111100000110010010000101001
+# TRUE R_i:  00001010010011001101100110010101
+# Permuted f_i:  11001000110000000100111110011000
+# R_i:  00001010010011001101100110010101
+# Final Cipher Text : 85E813540F0AB405
