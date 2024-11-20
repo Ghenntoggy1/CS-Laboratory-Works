@@ -83,9 +83,4 @@ ECHO "This is a modified text file" > "%PATH_TO_PKI%\user_text_to_be_signed.txt"
 PAUSE
 
 ECHO 11. Verify the signature
-
-ECHO 11.1 Extract public key from the certificate
-openssl x509 -in "%PATH_TO_PKI%\user_cert.crt" -pubkey -noout > "%PATH_TO_PKI%\public_key.pem"
-
-ECHO 11.2 Verify the signature
 openssl dgst -sha256 -verify "%PATH_TO_PKI%\public_key.pem" -signature "%PATH_TO_PKI%\signature.txt" "%PATH_TO_PKI%\user_text_to_be_signed.txt"
